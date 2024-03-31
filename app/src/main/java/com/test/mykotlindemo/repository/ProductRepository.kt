@@ -24,7 +24,8 @@ class ProductRepository(
     suspend fun getProducts(page: Int) {
 
         if (NetworkUtils.isInternetAvailable(applicationContext)) {
-            val result = productService.getQuotes()
+//            val result = productService.getQuotes()
+            val result = productService.getQuotes1(page)
             if (result?.body() != null) {
                 productDatabase.productDao().addProduct(result.body()!!.products)
                 productsLiveData.postValue(result.body())
