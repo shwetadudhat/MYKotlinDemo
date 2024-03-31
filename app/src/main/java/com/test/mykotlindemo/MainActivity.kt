@@ -11,6 +11,8 @@ import com.test.mykotlindemo.viewmodels.MainViewModelFactory
 
 class MainActivity : AppCompatActivity() {
 
+
+
     lateinit var mainViewModel: MainViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,9 +23,15 @@ class MainActivity : AppCompatActivity() {
 
         mainViewModel = ViewModelProvider(this, MainViewModelFactory(repository)).get(MainViewModel::class.java)
 
+
+        /******************* Retrive data from Room and display in recyclerview *********************/
         mainViewModel.products.observe(this, Observer {
             Toast.makeText(this@MainActivity, it.products.size.toString(), Toast.LENGTH_SHORT).show()
             Log.d("productsList",it.products.toString())
+            Log.d("productsListSize",it.products.size.toString())
+
+//            retrive data from room
+
         })
 
     }
