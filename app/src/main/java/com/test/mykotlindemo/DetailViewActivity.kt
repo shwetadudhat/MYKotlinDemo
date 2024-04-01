@@ -40,11 +40,10 @@ class DetailViewActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Initialize repository
+
         productRepository = (application as ProductApplication).productRepository
 
-        // Initialize viewModel
         viewModel = ViewModelProvider(this).get(DetailViewModel::class.java)
-
 
         // Retrieve product object from Intent extras
         val product = intent.getSerializableExtra("product") as? Product
@@ -56,7 +55,6 @@ class DetailViewActivity : AppCompatActivity() {
             // Now you can use the product object in this activity
             updateUI(product)
             Log.d("TAG", "onCreate: "+product.title)
-//            ivThumbnail
 
             ivThumbnail.setOnClickListener {
                 checkCameraPermission()
@@ -86,6 +84,9 @@ class DetailViewActivity : AppCompatActivity() {
 
         if (newDescription.isNotEmpty() && newPrice != null) {
 
+            // Convert the byte array to a Base64 encoded string
+//                    val thumbnailString: String = Base64.encodeToString(imageInByte, Base64.DEFAULT)
+
             val thumbnailString: String? = if (imageByteArray.isNotEmpty()) {
                 // Convert the byte array to a Base64 encoded string
                 Base64.encodeToString(imageByteArray, Base64.DEFAULT)
@@ -111,11 +112,23 @@ class DetailViewActivity : AppCompatActivity() {
     }
 
     private fun checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA), REQUEST_CODE_CAPTURE_IMAGE)
-        } else {
+
+        if (ContextCompat.checkSelfPermission(this@DetailViewActivity,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) !==
+            PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this@DetailViewActivity,
+                    android.Manifest.permission.CAMERA)) {
+                ActivityCompat.requestPermissions(this@DetailViewActivity,
+                    arrayOf(android.Manifest.permission.CAMERA), REQUEST_CODE_CAPTURE_IMAGE)
+            } else {
+                ActivityCompat.requestPermissions(this@DetailViewActivity,
+                    arrayOf(android.Manifest.permission.CAMERA), REQUEST_CODE_CAPTURE_IMAGE)
+            }
+        }else{
             viewModel.capturePhoto(this)
+
         }
+
     }
 
     private fun updateProduct(updatedProduct: Product) {
@@ -151,21 +164,39 @@ class DetailViewActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_CAPTURE_IMAGE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                viewModel.capturePhoto(this)
-            } else {
-                Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show()
+
+
+            when (requestCode) {
+                REQUEST_CODE_CAPTURE_IMAGE -> {
+                    if (grantResults.isNotEmpty() && grantResults[0] ==
+                        PackageManager.PERMISSION_GRANTED
+                    ) {
+                        if ((ContextCompat.checkSelfPermission(
+                                this@DetailViewActivity,
+                                android.Manifest.permission.CAMERA
+                            ) ===
+                                    PackageManager.PERMISSION_GRANTED)
+                        ) {
+                            Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
+                            viewModel.capturePhoto(this)
+                        }
+                    } else {
+                        Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
+                    }
+                    return
+                }
             }
-        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (requestCode == REQUEST_CODE_CAPTURE_IMAGE && resultCode == Activity.RESULT_OK && data != null) {
             viewModel.processCapturedImage(data)
            }
     }
+
+
 }
 
 

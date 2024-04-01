@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.provider.MediaStore
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -28,9 +29,7 @@ class DetailViewModel : ViewModel() {
 
     fun capturePhoto(context: Context) {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (cameraIntent.resolveActivity(context.packageManager) != null) {
-            (context as Activity).startActivityForResult(cameraIntent, REQUEST_CODE_CAPTURE_IMAGE)
-        }
+        (context as Activity).startActivityForResult(cameraIntent, REQUEST_CODE_CAPTURE_IMAGE)
     }
 
 
