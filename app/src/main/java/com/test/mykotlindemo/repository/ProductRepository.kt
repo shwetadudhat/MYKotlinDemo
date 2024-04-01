@@ -21,11 +21,11 @@ class ProductRepository(
         get() = productsLiveData
 
 
-    suspend fun getProducts(page: Int) {
+    suspend fun getProducts(skip: Int) {
 
         if (NetworkUtils.isInternetAvailable(applicationContext)) {
 //            val result = productService.getQuotes()
-            val result = productService.getQuotes1(page)
+            val result = productService.getQuotes1(skip)
             if (result?.body() != null) {
                 productDatabase.productDao().addProduct(result.body()!!.products)
                 productsLiveData.postValue(result.body())
@@ -44,6 +44,13 @@ class ProductRepository(
         productsLiveData.postValue(productsList)
 
     }
+
+  /*  suspend fun getProductsFromRoom(skip: Int, limit: Int) {
+        val products = productDatabase.productDao().getProducts(skip, limit)
+        val productsList = DummyProductsList(30, products, skip, limit)
+        productsLiveData.postValue(productsList)
+    }*/
+
 }
 
 

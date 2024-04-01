@@ -6,12 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet.Constraint
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.test.mykotlindemo.Model.Product
 import com.test.mykotlindemo.R
 
-class ProductListAdapter(private val context: Context, private var productList: MutableList<Product>,private val loadMoreListener: LoadMoreListener) : RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
+class ProductListAdapter(private val clickListener: (product: Product) -> Unit,private val context: Context, private var productList: MutableList<Product>,private val loadMoreListener: LoadMoreListener) : RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
 
 
     private var isLoading = false
@@ -19,7 +21,7 @@ class ProductListAdapter(private val context: Context, private var productList: 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.layout_product_list, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(view,clickListener)
 
     }
 
@@ -40,6 +42,10 @@ class ProductListAdapter(private val context: Context, private var productList: 
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int){
+
+        val product = productList[position]
+        holder.bind(product)
+
         // Bind data to views here
         if (position == productList.size - 1 && !isLoading) {
             loadMoreListener.onLoadMore()
@@ -51,15 +57,35 @@ class ProductListAdapter(private val context: Context, private var productList: 
         Glide.with(context).load(productList.get(position).thumbnail).into(holder.ivproImg)
     }
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
+    class ViewHolder(view: View,private val clickListener: (product: Product) -> Unit): RecyclerView.ViewHolder(view) {
+        private lateinit var product: Product
         val ivproImg:ImageView = view.findViewById(R.id.ivProImg)
         val tvProName:TextView = view.findViewById(R.id.tvProName)
         val tvProPrice:TextView = view.findViewById(R.id.tvProPrice)
+        val layout:ConstraintLayout = view.findViewById(R.id.layout)
+
+        init {
+            initClickListeners()
+        }
+
+        fun bind(product: Product) {
+            this.product = product
+            // Bind product data to views here
+        }
+
+        //And pass data here with invoke
+        private fun initClickListeners() {
+            layout.setOnClickListener { clickListener.invoke(product) }
+        }
 
     }
+
+
+
 
     interface LoadMoreListener {
         fun onLoadMore()
     }
+
 }
 

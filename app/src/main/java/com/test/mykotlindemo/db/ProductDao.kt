@@ -14,4 +14,7 @@ interface ProductDao {
 
     @Query("SELECT * FROM product")
     suspend fun getProductss() : MutableList<Product>
+
+   /* @Query("SELECT * FROM products LIMIT :limit OFFSET :skip")
+    suspend fun getProducts(skip: Int, limit: Int): MutableList<Product>*/
 }

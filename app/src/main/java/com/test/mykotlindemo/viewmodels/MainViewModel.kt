@@ -21,9 +21,15 @@ class MainViewModel(private val repository: ProductRepository): ViewModel()  {
         get() = repository.products
 
 
-    fun loadNextPage(page: Int) {
+    fun loadNextPage(skip: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getProducts(page)
+            repository.getProducts(skip)
         }
     }
+
+    /*fun loadProductsFromRoom(skip: Int, limit: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getProductsFromRoom(skip, limit)
+        }
+    }*/
 }

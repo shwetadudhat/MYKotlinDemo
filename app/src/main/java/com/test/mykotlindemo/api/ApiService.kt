@@ -9,5 +9,5 @@ interface ApiService {
 
     @GET("/products")
 //    suspend fun getQuotes() : Response<DummyProductsList>
-    suspend fun getQuotes1(@Query("page") page: Int) : Response<DummyProductsList>
+    suspend fun getQuotes1(@Query("skip") page: Int) : Response<DummyProductsList>
 }

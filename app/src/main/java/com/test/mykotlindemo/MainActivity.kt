@@ -1,5 +1,6 @@
 package com.test.mykotlindemo
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -18,6 +19,8 @@ class MainActivity : AppCompatActivity(), ProductListAdapter.LoadMoreListener {
     lateinit var adapter: ProductListAdapter
     lateinit var mainViewModel: MainViewModel
     private var currentPage = 1
+    private var skip = 0
+    private val limit = 30
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +30,16 @@ class MainActivity : AppCompatActivity(), ProductListAdapter.LoadMoreListener {
 
         mainViewModel = ViewModelProvider(this, MainViewModelFactory(repository)).get(MainViewModel::class.java)
 
-        adapter = ProductListAdapter(this@MainActivity,mutableListOf(),this)
+
+        adapter = ProductListAdapter(clickListener = { product ->
+            // Handle item click here
+            Toast.makeText(this, "Clicked: ${product.title}", Toast.LENGTH_SHORT).show()
+            val intent=Intent(this@MainActivity,DetailViewActivity::class.java)
+            intent.putExtra("product",product)
+            startActivity(intent)
+        },this@MainActivity,mutableListOf(),this)
+
+
         rvProductList.layoutManager = GridLayoutManager(this,2)
         rvProductList.adapter = adapter
 
@@ -43,8 +55,22 @@ class MainActivity : AppCompatActivity(), ProductListAdapter.LoadMoreListener {
 
         })
 
+        // Load initial data
+//        loadNextPage1()
+
     }
 
+    /**********room***********/
+//    override fun onLoadMore() {
+//        skip += limit
+//        loadNextPage1()
+//    }
+//    private fun loadNextPage1() {
+//        mainViewModel.loadProductsFromRoom(skip, limit)
+//    }
+
+
+    /**********APi***********/
     override fun onLoadMore() {
         currentPage++
         mainViewModel.loadNextPage(currentPage)
