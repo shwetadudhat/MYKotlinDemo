@@ -12,11 +12,13 @@ import com.test.mykotlindemo.viewmodels.MainViewModel
 import com.test.mykotlindemo.viewmodels.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ProductListAdapter.LoadMoreListener {
 
 
     lateinit var adapter: ProductListAdapter
     lateinit var mainViewModel: MainViewModel
+    private var currentPage = 1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -25,18 +27,26 @@ class MainActivity : AppCompatActivity() {
 
         mainViewModel = ViewModelProvider(this, MainViewModelFactory(repository)).get(MainViewModel::class.java)
 
+        adapter = ProductListAdapter(this@MainActivity,mutableListOf(),this)
+        rvProductList.layoutManager = GridLayoutManager(this,2)
+        rvProductList.adapter = adapter
+
         /******************* Retrive data from Room and display in recyclerview *********************/
         mainViewModel.products.observe(this, Observer {
             Toast.makeText(this@MainActivity, it.products.size.toString(), Toast.LENGTH_SHORT).show()
             Log.d("productsList",it.products.toString())
             Log.d("productsListSize",it.products.size.toString())
 
-            adapter = ProductListAdapter(this@MainActivity,it.products)
-            rvProductList.layoutManager = GridLayoutManager(this,2)
-            rvProductList.adapter = adapter
+
+            adapter.addData(it.products) // Adding new data to the adapter
 
 
         })
 
+    }
+
+    override fun onLoadMore() {
+        currentPage++
+        mainViewModel.loadNextPage(currentPage)
     }
 }

@@ -8,6 +8,6 @@ import retrofit2.http.Query
 interface ApiService {
 
     @GET("/products")
-    suspend fun getQuotes() : Response<DummyProductsList>
+//    suspend fun getQuotes() : Response<DummyProductsList>
     suspend fun getQuotes1(@Query("page") page: Int) : Response<DummyProductsList>
 }

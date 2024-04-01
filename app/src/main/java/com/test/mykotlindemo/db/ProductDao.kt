@@ -10,8 +10,8 @@ import com.test.mykotlindemo.Model.Product
 interface ProductDao {
 
     @Insert
-    suspend fun addProduct(quotes: List<Product>)
+    suspend fun addProduct(quotes: MutableList<Product>)
 
     @Query("SELECT * FROM product")
-    suspend fun getProductss() : List<Product>
+    suspend fun getProductss() : MutableList<Product>
 }
