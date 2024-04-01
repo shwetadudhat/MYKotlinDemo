@@ -45,11 +45,10 @@ class ProductRepository(
 
     }
 
-  /*  suspend fun getProductsFromRoom(skip: Int, limit: Int) {
-        val products = productDatabase.productDao().getProducts(skip, limit)
-        val productsList = DummyProductsList(30, products, skip, limit)
-        productsLiveData.postValue(productsList)
-    }*/
+
+    suspend fun updateProduct(product: Product) {
+        productDatabase.productDao().updateProducts(product)
+    }
 
 }
 

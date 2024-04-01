@@ -12,7 +12,7 @@ class MainViewModel(private val repository: ProductRepository): ViewModel()  {
 
     init {
         viewModelScope.launch(Dispatchers.IO){
-            repository.getProducts(1)
+//            repository.getProducts(1)
             repository.getProductsFromRoom()//data from room database
         }
     }
