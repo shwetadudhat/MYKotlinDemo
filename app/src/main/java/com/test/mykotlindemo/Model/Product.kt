@@ -20,6 +20,6 @@ data class Product(
     val price: Int?,
     val rating: Double,
     val stock: Int,
-    val thumbnail: String,
+    val thumbnail: String?,
     val title: String
 ) : Serializable
